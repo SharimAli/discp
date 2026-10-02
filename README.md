@@ -75,13 +75,13 @@ DISCORD_GUILD_ID=your_default_server_id_here
 ## 🔌 Client Integration Guides
 
 ### 1. Cursor IDE
-Open `~/.cursor/mcp.json` (or `<workspace>/.cursor/mcp.json`) and add:
+In `~/.cursor/mcp.json` or `.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
     "discp": {
       "command": "node",
-      "args": ["C:\\path\\to\\discp\\dist\\index.js"],
+      "args": ["/path/to/discp/dist/index.js"],
       "env": {
         "DISCORD_ACCOUNT_TYPE": "user",
         "DISCORD_TOKEN": "YOUR_DISCORD_TOKEN",
@@ -92,16 +92,14 @@ Open `~/.cursor/mcp.json` (or `<workspace>/.cursor/mcp.json`) and add:
 }
 ```
 
-### 2. Claude Desktop
-Add to your `claude_desktop_config.json`:
-* **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
-* **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+### 2. Claude (Desktop & Code CLI)
+* **Claude Desktop:** Add to `%APPDATA%\Claude\claude_desktop_config.json` (Windows) or `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS):
 ```json
 {
   "mcpServers": {
     "discp": {
       "command": "node",
-      "args": ["/absolute/path/to/discp/dist/index.js"],
+      "args": ["/path/to/discp/dist/index.js"],
       "env": {
         "DISCORD_ACCOUNT_TYPE": "user",
         "DISCORD_TOKEN": "YOUR_DISCORD_TOKEN",
@@ -111,18 +109,16 @@ Add to your `claude_desktop_config.json`:
   }
 }
 ```
-
-### 3. Claude Code (CLI)
-Register Discp directly in Claude Code CLI:
+* **Claude Code CLI:**
 ```bash
-claude mcp add discp node /absolute/path/to/discp/dist/index.js \
+claude mcp add discp node /path/to/discp/dist/index.js \
   --env DISCORD_ACCOUNT_TYPE=user \
   --env DISCORD_TOKEN="YOUR_DISCORD_TOKEN" \
   --env DISCORD_GUILD_ID="YOUR_SERVER_ID"
 ```
 
-### 4. Google Antigravity IDE
-Add to `~/.gemini/config/mcp_config.json`:
+### 3. Google Antigravity IDE
+In `~/.gemini/config/mcp_config.json`:
 ```json
 {
   "mcpServers": {
@@ -139,15 +135,15 @@ Add to `~/.gemini/config/mcp_config.json`:
 }
 ```
 
-### 5. OpenCode Desktop / OpenClaw
-Add to your `opencode.json` configuration:
+### 4. OpenCode Desktop / OpenClaw
+In `opencode.json`:
 ```json
 {
   "mcp": {
     "servers": {
       "discp": {
         "command": "node",
-        "args": ["/absolute/path/to/discp/dist/index.js"],
+        "args": ["/path/to/discp/dist/index.js"],
         "env": {
           "DISCORD_ACCOUNT_TYPE": "user",
           "DISCORD_TOKEN": "YOUR_DISCORD_TOKEN",
@@ -159,14 +155,14 @@ Add to your `opencode.json` configuration:
 }
 ```
 
-### 6. Windsurf IDE
-Add to `~/.codeium/windsurf/mcp_config.json`:
+### 5. Other Editors (VS Code / Cline / Roo Code / Continue / Windsurf)
+Use the standard MCP server definition in your tool's settings (`cline_mcp_settings.json`, `~/.codeium/windsurf/mcp_config.json`, or `.continue/config.json`):
 ```json
 {
   "mcpServers": {
     "discp": {
       "command": "node",
-      "args": ["/absolute/path/to/discp/dist/index.js"],
+      "args": ["/path/to/discp/dist/index.js"],
       "env": {
         "DISCORD_ACCOUNT_TYPE": "user",
         "DISCORD_TOKEN": "YOUR_DISCORD_TOKEN",
@@ -177,26 +173,8 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 }
 ```
 
-### 7. VS Code (Cline / Roo Code / Continue)
-In Cline MCP settings (`cline_mcp_settings.json`):
-```json
-{
-  "mcpServers": {
-    "discp": {
-      "command": "node",
-      "args": ["/absolute/path/to/discp/dist/index.js"],
-      "env": {
-        "DISCORD_ACCOUNT_TYPE": "user",
-        "DISCORD_TOKEN": "YOUR_DISCORD_TOKEN",
-        "DISCORD_GUILD_ID": "YOUR_SERVER_ID"
-      }
-    }
-  }
-}
-```
-
-### 8. HTTP / SSE Mode (n8n, Flowise, Remote Agents)
-To run Discp as a long-running microservice:
+### 6. HTTP / SSE Mode (n8n, Flowise, Remote AI)
+Run Discp as a persistent network microservice:
 ```bash
 export MCP_TRANSPORT=http
 export PORT=8085
