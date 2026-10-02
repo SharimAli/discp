@@ -2,6 +2,15 @@
   <h1>⚡ Discp</h1>
   <p><strong>The Feature-Complete Discord Model Context Protocol (MCP) Server</strong></p>
   <p>Providing any AI assistant (Claude Desktop, Claude Code, Cursor, Antigravity, OpenCode, Windsurf, n8n) with native, granular control over Discord.</p>
+
+  <p>
+    <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-Server-8A2BE2.svg?style=for-the-badge&logo=anthropic&logoColor=white" alt="MCP Server"></a>
+    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"></a>
+    <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-%3E%3D18-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License: MIT"></a>
+    <a href="https://github.com/SharimAli/discp/stargazers"><img src="https://img.shields.io/github/stars/SharimAli/discp?style=for-the-badge&logo=github&color=gold" alt="GitHub Stars"></a>
+    <a href="https://github.com/SharimAli/discp/issues"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge" alt="PRs Welcome"></a>
+  </p>
 </div>
 
 ---
