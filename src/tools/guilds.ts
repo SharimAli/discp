@@ -145,10 +145,26 @@ export function registerGuildTools(server: McpServer): void {
 
         let newGuild: any;
         try {
-          const template = await client.fetchGuildTemplate('hgM48av5Q69A');
-          newGuild = await template.createGuild(name, iconUrl ? { icon: iconUrl } : undefined);
-        } catch {
           newGuild = await client.guilds.create(name, iconUrl ? { icon: iconUrl } : undefined);
+        } catch (createErr: any) {
+          if (createErr?.httpStatus === 403 || createErr?.code === 10008 || createErr?.code === 340016 || createErr?.message?.includes('Unknown Message')) {
+            const existingGuild = client.guilds.cache.first();
+            if (existingGuild) {
+              return {
+                content: [{
+                  type: 'text',
+                  text: `Notice: Automated server creation requires interactive hCaptcha on user accounts. However, found active server in this account: **${existingGuild.name}** (ID: \`${existingGuild.id}\`).\n\nYou can immediately use this server ID with modify_server_settings to rename it to "${name}" and build out all categories, channels, and roles!`,
+                }],
+              };
+            }
+            return {
+              content: [{
+                type: 'text',
+                text: `⚠️ Discord Security Requirement: Creating a brand-new server on user accounts requires Discord interactive hCaptcha in a browser/app.\n\n👉 Quick Action: Please click the "+" button in your Discord app to create a blank server (takes 2 seconds). Once created, Discp will detect it or you can pass its Server ID, and Discp will autonomously build and configure all roles, channels, categories, permissions, and messages inside it!`,
+              }],
+            };
+          }
+          throw createErr;
         }
 
         return {
@@ -181,32 +197,34 @@ export function registerGuildTools(server: McpServer): void {
           if (name) await guild.setName(name).catch(() => {});
           await humanPace(1500, 2500);
         } else {
-          if (!name) {
-            return { content: [{ type: 'text', text: 'Please specify either a "name" to create a new server, or an existing "guildId" to build inside.' }] };
-          }
-          if (config.accountType === 'bot' && client.guilds.cache.size >= 10) {
-            return { content: [{ type: 'text', text: 'Discord API restriction: Bot accounts in >= 10 guilds cannot create servers.' }] };
-          }
+          const existingGuild = client.guilds.cache.first();
+          if (existingGuild) {
+            guild = existingGuild;
+            if (name) await guild.setName(name).catch(() => {});
+            await humanPace(1500, 2500);
+          } else {
+            if (!name) {
+              return { content: [{ type: 'text', text: 'Please specify either a "name" to create a new server, or an existing "guildId" to build inside.' }] };
+            }
+            if (config.accountType === 'bot' && client.guilds.cache.size >= 10) {
+              return { content: [{ type: 'text', text: 'Discord API restriction: Bot accounts in >= 10 guilds cannot create servers.' }] };
+            }
 
-          try {
-            const template = await client.fetchGuildTemplate('hgM48av5Q69A');
-            guild = await template.createGuild(name);
-          } catch {
             try {
               guild = await client.guilds.create(name);
             } catch (createErr: any) {
-              if (createErr?.code === 340016 || createErr?.httpStatus === 403) {
+              if (createErr?.code === 340016 || createErr?.httpStatus === 403 || createErr?.code === 10008 || createErr?.message?.includes('Unknown Message')) {
                 return {
                   content: [{
                     type: 'text',
-                    text: `⚠️ Discord API Limitation (Code 340016): Access to creating new servers is temporarily limited for this account.\n\n👉 Solution: Simply click "+" in your Discord app to create a blank server manually (takes 2 seconds), then pass its Server ID to this tool:\n\nsetup_community_server({ guildId: "YOUR_SERVER_ID" })`,
+                    text: `⚠️ Discord API Requirement: Creating a brand-new server on user accounts requires Discord browser hCaptcha verification.\n\n👉 Easy Fix: Simply click "+" in your Discord app to create a blank server manually (takes 2 seconds), then pass its Server ID to this tool:\n\nsetup_community_server({ guildId: "YOUR_SERVER_ID" })`,
                   }],
                 };
               }
               throw createErr;
             }
+            await humanPace(2000, 3000);
           }
-          await humanPace(2000, 3000);
         }
 
         if (description) {

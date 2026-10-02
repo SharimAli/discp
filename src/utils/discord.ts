@@ -13,7 +13,10 @@ import { config } from '../config.js';
  * Resolves a Guild from guildId parameter or the default configured guild.
  */
 export async function resolveGuild(client: Client, guildId?: string): Promise<Guild> {
-  const targetId = guildId || config.defaultGuildId;
+  let targetId = guildId || config.defaultGuildId;
+  if (!targetId && client.guilds.cache.size === 1) {
+    targetId = client.guilds.cache.first()?.id;
+  }
   if (!targetId) {
     throw new Error('Guild ID not specified and no default DISCORD_GUILD_ID is configured.');
   }
