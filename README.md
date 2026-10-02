@@ -51,7 +51,7 @@ Discp equips AI models with tools to discover fresh aesthetic symbols and channe
 
 ### 1. Clone & Build
 ```bash
-git clone https://github.com/<your-username>/discp.git
+git clone https://github.com/SharimAli/discp.git
 cd discp
 npm install
 npm run build
