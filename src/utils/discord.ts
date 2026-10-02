@@ -106,10 +106,27 @@ export function parsePermissionsInput(rawBitfield?: string, namesCsv?: string): 
   return new PermissionsBitField();
 }
 
+let writeQueue: Promise<any> = Promise.resolve();
+
+/**
+ * Universal serialized write scheduler that enforces natural human intervals
+ * across all Discord write operations, even if an AI model calls multiple tools concurrently.
+ */
+export async function paceWrite<T>(action: () => Promise<T>, minMs = 1500, maxMs = 2800): Promise<T> {
+  const execute = async () => {
+    const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    return await action();
+  };
+  const result = writeQueue.then(execute, execute);
+  writeQueue = result.then(() => {}, () => {});
+  return result;
+}
+
 /**
  * Humanizer delay helper to prevent Discord anti-abuse security warnings.
  */
-export async function humanPace(minMs = 1200, maxMs = 2200): Promise<void> {
+export async function humanPace(minMs = 1500, maxMs = 2500): Promise<void> {
   const delay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
   await new Promise((resolve) => setTimeout(resolve, delay));
 }

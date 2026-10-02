@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { getDiscordClient } from '../client.js';
-import { resolveGuild, resolveMember, parsePermissionsInput, formatPermissions } from '../utils/discord.js';
+import { resolveGuild, resolveMember, parsePermissionsInput, formatPermissions, paceWrite } from '../utils/discord.js';
 import { formatError } from '../utils/errors.js';
 import { ColorResolvable } from 'discord.js';
 
@@ -82,14 +82,14 @@ export function registerRoleTools(server: McpServer): void {
         const guild = await resolveGuild(client, guildId);
 
         const permissions = parsePermissionsInput(permissionsRaw, permissionsNames);
-        const role = await guild.roles.create({
+        const role = await paceWrite(() => guild.roles.create({
           name,
           color: color as ColorResolvable | undefined,
           hoist: hoist || false,
           mentionable: mentionable || false,
           permissions: permissions.bitfield !== 0n ? permissions.bitfield : undefined,
           reason,
-        });
+        }));
 
         return {
           content: [{
@@ -136,7 +136,7 @@ export function registerRoleTools(server: McpServer): void {
           editData.permissions = parsePermissionsInput(permissionsRaw, permissionsNames);
         }
 
-        await role.edit({ ...editData, reason } as any);
+        await paceWrite(() => role.edit({ ...editData, reason } as any));
         return { content: [{ type: 'text', text: `Successfully updated role **${role.name}** (ID: \`${role.id}\`).` }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Failed to edit role: ${formatError(err)}` }] };
@@ -160,7 +160,7 @@ export function registerRoleTools(server: McpServer): void {
         if (!role) return { content: [{ type: 'text', text: `Role ID \`${roleId}\` not found.` }] };
 
         const name = role.name;
-        await role.delete(reason);
+        await paceWrite(() => role.delete(reason));
         return { content: [{ type: 'text', text: `Successfully deleted role **${name}** (ID: \`${roleId}\`).` }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Failed to delete role: ${formatError(err)}` }] };
@@ -185,7 +185,7 @@ export function registerRoleTools(server: McpServer): void {
         const role = await guild.roles.fetch(roleId);
         if (!role) return { content: [{ type: 'text', text: `Role ID \`${roleId}\` not found.` }] };
 
-        await member.roles.add(role, reason);
+        await paceWrite(() => member.roles.add(role, reason));
         return { content: [{ type: 'text', text: `Assigned role **${role.name}** to ${member.user.tag}.` }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Failed to assign role: ${formatError(err)}` }] };
@@ -210,7 +210,7 @@ export function registerRoleTools(server: McpServer): void {
         const role = await guild.roles.fetch(roleId);
         if (!role) return { content: [{ type: 'text', text: `Role ID \`${roleId}\` not found.` }] };
 
-        await member.roles.remove(role, reason);
+        await paceWrite(() => member.roles.remove(role, reason));
         return { content: [{ type: 'text', text: `Removed role **${role.name}** from ${member.user.tag}.` }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Failed to remove role: ${formatError(err)}` }] };

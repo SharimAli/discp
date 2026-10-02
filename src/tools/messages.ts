@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { getDiscordClient } from '../client.js';
-import { resolveTextChannel, formatBytes } from '../utils/discord.js';
+import { resolveTextChannel, formatBytes, paceWrite } from '../utils/discord.js';
 import { formatMessageList } from '../utils/formatters.js';
 import { formatError } from '../utils/errors.js';
 import { Message, TextChannel } from 'discord.js';
@@ -62,10 +62,10 @@ export function registerMessageTools(server: McpServer): void {
           content = await resolveTextMentions((channel as any).guild, message);
         }
 
-        const sent = await channel.send({
+        const sent = await paceWrite(() => channel.send({
           content,
           reply: replyToMessageId ? { messageReference: replyToMessageId } : undefined,
-        });
+        }));
 
         return {
           content: [{
@@ -99,7 +99,7 @@ export function registerMessageTools(server: McpServer): void {
           content = await resolveTextMentions((channel as any).guild, newMessage);
         }
 
-        const edited = await msg.edit(content);
+        const edited: any = await paceWrite(() => msg.edit(content));
         return { content: [{ type: 'text', text: `Message edited successfully. Link: ${edited.url}` }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Failed to edit message: ${formatError(err)}` }] };
@@ -121,7 +121,7 @@ export function registerMessageTools(server: McpServer): void {
         const channel = await resolveTextChannel(client, channelId);
         const msg = await channel.messages.fetch(messageId);
 
-        await msg.delete();
+        await paceWrite(() => msg.delete());
         return { content: [{ type: 'text', text: `Message \`${messageId}\` deleted successfully.` }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Failed to delete message: ${formatError(err)}` }] };
@@ -280,7 +280,7 @@ export function registerMessageTools(server: McpServer): void {
         const channel = await resolveTextChannel(client, channelId);
         const msg = await channel.messages.fetch(messageId);
 
-        await msg.react(emoji);
+        await paceWrite(() => msg.react(emoji));
         return { content: [{ type: 'text', text: `Added reaction ${emoji} to message ${msg.url}` }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Failed to add reaction: ${formatError(err)}` }] };

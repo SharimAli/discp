@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { getDiscordClient } from '../client.js';
-import { parsePermissionsInput, formatPermissions, humanPace } from '../utils/discord.js';
+import { parsePermissionsInput, formatPermissions, humanPace, paceWrite } from '../utils/discord.js';
 import { formatError } from '../utils/errors.js';
 import { GuildChannel, OverwriteType } from 'discord.js';
 
@@ -133,14 +133,12 @@ export function registerPermissionTools(server: McpServer): void {
           permsObj[toCanonicalFlag(flag)] = false;
         }
 
-        await humanPace(1200, 2200);
-
         if (typeof guildChannel.permissionOverwrites.edit === 'function') {
-          await guildChannel.permissionOverwrites.edit(roleId, permsObj, { reason });
+          await paceWrite(() => guildChannel.permissionOverwrites.edit(roleId, permsObj, { reason }));
         } else if (typeof (guildChannel.permissionOverwrites as any).create === 'function') {
-          await (guildChannel.permissionOverwrites as any).create(roleId, permsObj, { reason });
+          await paceWrite(() => (guildChannel.permissionOverwrites as any).create(roleId, permsObj, { reason }));
         } else if (typeof (guildChannel.permissionOverwrites as any).set === 'function') {
-          await (guildChannel.permissionOverwrites as any).set([{ id: roleId, allow: allow.bitfield, deny: deny.bitfield }]);
+          await paceWrite(() => (guildChannel.permissionOverwrites as any).set([{ id: roleId, allow: allow.bitfield, deny: deny.bitfield }]));
         }
 
         return {
@@ -187,9 +185,7 @@ export function registerPermissionTools(server: McpServer): void {
           permsObj[toCanonicalFlag(flag)] = false;
         }
 
-        await humanPace(1200, 2200);
-
-        await guildChannel.permissionOverwrites.edit(userId, permsObj, { reason });
+        await paceWrite(() => guildChannel.permissionOverwrites.edit(userId, permsObj, { reason }));
 
         return {
           content: [{
@@ -220,7 +216,7 @@ export function registerPermissionTools(server: McpServer): void {
         }
 
         const guildChannel = channel as GuildChannel;
-        await guildChannel.permissionOverwrites.delete(targetId, reason);
+        await paceWrite(() => guildChannel.permissionOverwrites.delete(targetId, reason));
 
         return { content: [{ type: 'text', text: `Successfully deleted permission overwrite for \`${targetId}\` from #${guildChannel.name}.` }] };
       } catch (err) {

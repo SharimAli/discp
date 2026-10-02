@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { getDiscordClient } from '../client.js';
-import { resolveGuild, createGuildChannel } from '../utils/discord.js';
+import { resolveGuild, createGuildChannel, paceWrite } from '../utils/discord.js';
 import { formatError } from '../utils/errors.js';
 import { formatChannelType } from '../utils/formatters.js';
 import {
@@ -37,7 +37,7 @@ export function registerChannelTools(server: McpServer): void {
         const client = await getDiscordClient();
         const guild = await resolveGuild(client, guildId);
 
-        const channel = await createGuildChannel(guild, {
+        const channel = await paceWrite(() => createGuildChannel(guild, {
           name,
           type: ChannelType.GuildText,
           parent: categoryId || undefined,
@@ -46,7 +46,7 @@ export function registerChannelTools(server: McpServer): void {
           rateLimitPerUser: slowmode !== undefined ? slowmode : undefined,
           position: position !== undefined ? position : undefined,
           reason,
-        });
+        }));
 
         return { content: [{ type: 'text', text: `Created text channel: #${channel.name} (ID: \`${channel.id}\`)` }] };
       } catch (err) {
@@ -71,14 +71,14 @@ export function registerChannelTools(server: McpServer): void {
         const client = await getDiscordClient();
         const guild = await resolveGuild(client, guildId);
 
-        const channel = await createGuildChannel(guild, {
+        const channel = await paceWrite(() => createGuildChannel(guild, {
           name,
           type: ChannelType.GuildVoice,
           parent: categoryId || undefined,
           userLimit: userLimit !== undefined ? userLimit : undefined,
           bitrate: bitrate !== undefined ? bitrate : undefined,
           reason,
-        });
+        }));
 
         return { content: [{ type: 'text', text: `Created voice channel: ${channel.name} (ID: \`${channel.id}\`)` }] };
       } catch (err) {
@@ -102,13 +102,13 @@ export function registerChannelTools(server: McpServer): void {
         const client = await getDiscordClient();
         const guild = await resolveGuild(client, guildId);
 
-        const channel = await createGuildChannel(guild, {
+        const channel = await paceWrite(() => createGuildChannel(guild, {
           name,
           type: ChannelType.GuildStageVoice,
           parent: categoryId || undefined,
           bitrate: bitrate !== undefined ? bitrate : undefined,
           reason,
-        });
+        }));
 
         return { content: [{ type: 'text', text: `Created stage channel: ${channel.name} (ID: \`${channel.id}\`)` }] };
       } catch (err) {
@@ -131,12 +131,12 @@ export function registerChannelTools(server: McpServer): void {
         const client = await getDiscordClient();
         const guild = await resolveGuild(client, guildId);
 
-        const category = await createGuildChannel(guild, {
+        const category = await paceWrite(() => createGuildChannel(guild, {
           name,
           type: ChannelType.GuildCategory,
           position: position !== undefined ? position : undefined,
           reason,
-        });
+        }));
 
         return { content: [{ type: 'text', text: `Created category: "${category.name}" (ID: \`${category.id}\`)` }] };
       } catch (err) {
@@ -180,7 +180,7 @@ export function registerChannelTools(server: McpServer): void {
         if (userLimit !== undefined && 'setUserLimit' in guildChannel) editData.userLimit = userLimit;
         if (bitrate !== undefined && 'setBitrate' in guildChannel) editData.bitrate = bitrate;
 
-        await guildChannel.edit({ ...editData, reason } as any);
+        await paceWrite(() => guildChannel.edit({ ...editData, reason } as any));
         return { content: [{ type: 'text', text: `Updated channel: #${guildChannel.name} (ID: \`${channelId}\`)` }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Failed to edit channel: ${formatError(err)}` }] };
@@ -205,11 +205,11 @@ export function registerChannelTools(server: McpServer): void {
           return { content: [{ type: 'text', text: `Category not found: ${categoryId}` }] };
         }
 
-        await (category as CategoryChannel).edit({
+        await paceWrite(() => (category as CategoryChannel).edit({
           name: name || undefined,
           position: position !== undefined ? position : undefined,
           reason,
-        });
+        }));
 
         return { content: [{ type: 'text', text: `Updated category: "${category.name}" (ID: \`${categoryId}\`)` }] };
       } catch (err) {
@@ -234,7 +234,7 @@ export function registerChannelTools(server: McpServer): void {
         }
 
         const name = 'name' in channel ? (channel as any).name : channelId;
-        await (channel as GuildChannel).delete(reason);
+        await paceWrite(() => (channel as GuildChannel).delete(reason));
         return { content: [{ type: 'text', text: `Deleted channel: #${name} (ID: \`${channelId}\`)` }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Failed to delete channel: ${formatError(err)}` }] };
@@ -258,7 +258,7 @@ export function registerChannelTools(server: McpServer): void {
         }
 
         const name = (category as CategoryChannel).name;
-        await (category as CategoryChannel).delete(reason);
+        await paceWrite(() => (category as CategoryChannel).delete(reason));
         return { content: [{ type: 'text', text: `Deleted category: "${name}" (ID: \`${categoryId}\`)` }] };
       } catch (err) {
         return { content: [{ type: 'text', text: `Failed to delete category: ${formatError(err)}` }] };
