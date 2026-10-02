@@ -4,7 +4,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { registerAllTools } from '../dist/tools/index.js';
 
-const targetDir = 'C:\\Users\\whoami\\.gemini\\antigravity\\mcp\\discp';
+const targetDir = process.env.MCP_SCHEMA_DIR || path.join(process.cwd(), 'schemas');
 if (!fs.existsSync(targetDir)) {
   fs.mkdirSync(targetDir, { recursive: true });
 }
@@ -35,7 +35,7 @@ for (const [name, toolObj] of Object.entries(tools)) {
   };
 
   const filePath = path.join(targetDir, `${name}.json`);
-  fs.writeFileSync(filePath, JSON.stringify(toolDefinition));
+  fs.writeFileSync(filePath, JSON.stringify(toolDefinition, null, 2));
   count++;
 }
 
