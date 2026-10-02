@@ -214,4 +214,14 @@ When designing servers, AI assistants are encouraged to consult:
 ---
 
 ## 📜 License
-MIT License.
+
+Distributed under the [MIT License](LICENSE). See [`LICENSE`](LICENSE) for more details.
+
+---
+
+## ⚠️ Disclaimer
+
+* **Discord Terms of Service:** Automating user accounts (selfbots) is against Discord's Terms of Service and Community Guidelines. While Discp integrates natural human pacing (1.2s – 2.5s randomized intervals) to safeguard accounts, using user account tokens is done strictly at your own discretion and risk.
+* **Limitation of Liability:** The authors and contributors assume no responsibility or liability for any account terminations, suspensions, rate limits, or sanctions enforced by Discord.
+* **Non-Affiliation:** Discp is an independent open-source project and is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Discord Inc. or its affiliates.
+
