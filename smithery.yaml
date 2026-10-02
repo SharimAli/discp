@@ -1,0 +1,29 @@
+# Smithery configuration for Discp MCP Server
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required:
+      - discordToken
+    properties:
+      discordToken:
+        type: string
+        description: "Your Discord account or bot token."
+      discordAccountType:
+        type: string
+        enum: ["user", "bot"]
+        default: "user"
+        description: "Account type: 'user' for user/alt accounts, 'bot' for official bot tokens."
+      discordGuildId:
+        type: string
+        description: "Default Discord Server ID (optional)."
+  commandFunction: |-
+    (config) => ({
+      command: 'node',
+      args: ['dist/index.js'],
+      env: {
+        DISCORD_TOKEN: config.discordToken,
+        DISCORD_ACCOUNT_TYPE: config.discordAccountType || 'user',
+        DISCORD_GUILD_ID: config.discordGuildId || ''
+      }
+    })
