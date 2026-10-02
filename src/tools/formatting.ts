@@ -132,6 +132,71 @@ export function registerFormattingTools(server: McpServer): void {
       }
     }
   );
+
+  server.tool(
+    'get_discord_syntax_guide',
+    'Get a comprehensive reference guide of all Discord Markdown shortcuts, techniques, mentions, timestamps, subtext, spoilers, and internal navigation links',
+    {},
+    async () => {
+      const guide = [
+        '# 📘 Discord Markdown & Syntax Techniques Cheatsheet\n',
+        '### 1. Interactive Mentions & Navigation Pills',
+        '- **User Mention:** `<@USER_ID>` (Clickable user profile card)',
+        '- **Nickname Mention:** `<@!USER_ID>`',
+        '- **Role Mention:** `<@&ROLE_ID>` (Colored, clickable role filter pill)',
+        '- **Channel Link:** `<#CHANNEL_ID>` (Clickable channel navigation link)',
+        '- **Everyone / Here:** `@everyone`, `@here`',
+        '- **Server Channels & Roles Tab:** `<id:browse>`',
+        '- **Server Customization Tab:** `<id:customize>`',
+        '- **Server Guide Tab:** `<id:guide>`',
+        '- **Message Direct Link:** `https://discord.com/channels/{GUILD_ID}/{CHANNEL_ID}/{MESSAGE_ID}`',
+        '',
+        '### 2. Dynamic Timestamps (`<t:UNIX_TIMESTAMP:STYLE>`)',
+        '*Timestamps automatically render in the reader\'s localized timezone:*',
+        '- `<t:1727888400:t>` ➔ `9:30 PM` *(Short Time)*',
+        '- `<t:1727888400:T>` ➔ `9:30:00 PM` *(Long Time)*',
+        '- `<t:1727888400:d>` ➔ `02/10/2026` *(Short Date)*',
+        '- `<t:1727888400:D>` ➔ `October 2, 2026` *(Long Date)*',
+        '- `<t:1727888400:f>` ➔ `October 2, 2026 9:30 PM` *(Short Date & Time - Default)*',
+        '- `<t:1727888400:F>` ➔ `Friday, October 2, 2026 9:30 PM` *(Long Date & Time)*',
+        '- `<t:1727888400:R>` ➔ `2 hours ago` or `in 3 days` *(Relative Countdown/Elapsed)*',
+        '',
+        '### 3. Custom Emojis & Slash Commands',
+        '- **Static Custom Emoji:** `<:emoji_name:EMOJI_ID>`',
+        '- **Animated Custom Emoji:** `<a:emoji_name:EMOJI_ID>`',
+        '- **Slash Command Link:** `</command_name:COMMAND_ID>`',
+        '- **Subcommand Link:** `</command_name subcommand:COMMAND_ID>`',
+        '',
+        '### 4. Text Styling & Headers',
+        '- **Subtext (Muted):** `-# This is small, muted subtext`',
+        '- **Header 1:** `# Big Heading`',
+        '- **Header 2:** `## Medium Heading`',
+        '- **Header 3:** `### Small Heading`',
+        '- **Bold:** `**bold text**`',
+        '- **Italics:** `*italic text*` or `_italic text_`',
+        '- **Underline:** `__underlined text__`',
+        '- **Strikethrough:** `~~strikethrough~~`',
+        '- **Bold Italics:** `***bold italic***`',
+        '- **Bold Underline:** `__**bold underline**__`',
+        '- **Spoiler (Hidden):** `||secret text||` (reveals on click)',
+        '- **Inline Code:** `` `code` ``',
+        '- **Fenced Code Block:** ```` ```ts ... ``` ```` (with syntax coloring)',
+        '- **Single Quote:** `> Quoted text`',
+        '- **Multi-line Quote:** `>>> Multi-line blockquote`',
+        '- **Masked Hyperlinks:** `[Display Text](https://url.com)`',
+        '- **Unordered List:** `- item` or `* item`',
+        '- **Ordered List:** `1. item`',
+        '- **Invisible Spacer / Blank Character:** `\u3164` (Hangul Filler for clean spacing without visible text)',
+      ].join('\n');
+
+      return {
+        content: [{
+          type: 'text',
+          text: guide,
+        }],
+      };
+    }
+  );
 }
 
 function escapeRegExp(string: string): string {
